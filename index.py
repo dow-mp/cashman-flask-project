@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-import json
 from cashman.utils.helpers import convert_bytes_to_json, loop_to_sum
 
 from cashman.model.expense import Expense, ExpenseSchema
@@ -8,59 +7,25 @@ from cashman.model.transaction_type import TransactionType
 
 app = Flask(__name__)
 
-# incomes = [
-#     {'description': 'salary', 'amount': 5000},
-#     {'description': 'uber', 'amount': 3250},
-#     {'description': 'lyft', 'amount': 1570}
-# ]
-
-# @app.route('/incomes')
-# def get_incomes():
-#     return jsonify(incomes)
-
-# @app.route('/incomes', methods=['POST'])
-# def add_income():
-#     incomes.append(request.get_json())
-#     print(request.get_json())
-#     return '', 201
-
-# @app.route('/incomes', methods=['PUT'])
-# def edit_income():
-#     for income in incomes:
-#         if request.get_json()['description'] == income['description']:
-#             income['amount'] = request.get_json()['amount']
-#     return incomes, 200
-
-# @app.route('/incomes', methods=['DELETE'])
-# def delete_income():
-#     try:
-#         incomes.remove(request.get_json())
-#     except Exception as e:
-#         return f"There was an error: {e}"
-#     return '', 204
-
 transactions = [
-    Income('Salary', 5000),
-    Income('Dividends', 200),
+    Income('salary', 5000),
+    Income('stock', 200),
+    Income('uber', 5000),
+    Income('deliveries', 200),
     Expense('groceries', 420),
-    Expense('utilities', 730)
+    Expense('utilities', 730),
+    Expense('gas', 420),
+    Expense('rent', 1730)
 ]
 
 @app.route('/incomes')
 def get_incomes():
     schema = IncomeSchema(many=True)
     incomes = schema.dump(filter(lambda t: t.type == TransactionType.INCOME, transactions))
-    # python lambdas are small anonymous functions that take any number of arguments
-    # lambda arguments : expression
-    # given t, does t.type == income? filter the iterable transactions when the lambda returns true (i.e. the trans type is income)
     return jsonify(incomes)
 
-# rewrite the following functions to use the new class types
 @app.route('/incomes', methods=['POST'])
 def add_income():
-    # incomes.append(request.get_json())
-    # print(request.get_json())
-    # return '', 201
     income = IncomeSchema().load(request.get_json())
     transactions.append(income)
     return "", 204
@@ -73,22 +38,26 @@ def delete_income():
         if t.description == income_for_del[1]:
             transactions.remove(t)
     return f"Successfully deleted {t}", 202
-    
 
-# @app.route('/incomes', methods=['PUT'])
-# def edit_income():
-#     for income in incomes:
-#         if request.get_json()['description'] == income['description']:
-#             income['amount'] = request.get_json()['amount']
-#     return incomes, 200
+@app.route('/all/<type>', methods=['DELETE'])
+def delete_all(type):
+    transaction_type = type.upper()
+    global transactions
+    if transaction_type == 'INCOME' or transaction_type == 'INCOMES':
+        rem_transactions = [t for t in transactions if t.type != TransactionType.INCOME]
+    if transaction_type == 'EXPENSE' or transaction_type == 'EXPENSES':
+        rem_transactions = [t for t in transactions if t.type != TransactionType.EXPENSE]
+    transactions = rem_transactions
+    return f"Successfully deleted all {transaction_type} transactions", 200
 
-# @app.route('/incomes', methods=['DELETE'])
-# def delete_income():
-#     try:
-#         incomes.remove(request.get_json())
-#     except Exception as e:
-#         return f"There was an error: {e}"
-#     return '', 204
+@app.route('/edit/<description>', methods=['PUT'])
+def edit_transaction(description):
+    req = request.get_json()
+    updates = list(req.items())
+    for t in transactions:
+        if t.description == description:
+            t.amount = updates[1][1]
+    return f"Item {description} successfully updated.", 418
 
 @app.route('/expenses')
 def get_expenses():
@@ -123,10 +92,6 @@ def get_bank_balance():
 
     return jsonify(total_income + total_expense)
 
-
-# TO DO: implement the update functionality
-# TO DO: implemebt delete ALL functionality
-# TO DO: handle errors gracefully
 
 if __name__ == "__main__":
     app.run()

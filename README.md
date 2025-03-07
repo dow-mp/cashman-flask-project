@@ -3,3 +3,8 @@ This project is a result of this [blog post from Auth0.](https://auth0.com/blog/
 
 # About Me
 I am having fun learning more and more Python all the time.
+
+# Future Plans
+- implement transaction IDs
+- handle errors gracefully
+- refactor
