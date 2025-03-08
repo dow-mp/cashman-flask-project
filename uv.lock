@@ -17,12 +17,14 @@ source = { virtual = "." }
 dependencies = [
     { name = "flask" },
     { name = "marshmallow" },
+    { name = "uuid" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "flask", specifier = ">=3.0.3" },
     { name = "marshmallow", specifier = ">=3.23.1" },
+    { name = "uuid", specifier = ">=1.30" },
 ]
 
 [[package]]
@@ -141,6 +143,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/d0/63/68dbb6eb2de9cb10e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/ef/eb23f262cca3c0c4eb7ab1933c3b1f03d021f2c48f54763065b6f0e321be/packaging-24.2-py3-none-any.whl", hash = "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759", size = 65451 },
 ]
+
+[[package]]
+name = "uuid"
+version = "1.30"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/63/f42f5aa951ebf2c8dac81f77a8edcc1c218640a2a35a03b9ff2d4aa64c3d/uuid-1.30.tar.gz", hash = "sha256:1f87cc004ac5120466f36c5beae48b4c48cc411968eed0eaecd3da82aa96193f", size = 5811 }
 
 [[package]]
 name = "werkzeug"
